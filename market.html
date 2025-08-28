@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>Paired • Marketplace</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script src="https://unpkg.com/lucide@latest"></script>
+	<link rel="stylesheet" href="styles.css" />
+	<script src="theme.js"></script>
+	<style>
+		.orb { position:absolute; border-radius:50%; filter:blur(80px); opacity:.6; animation:float 20s infinite ease-in-out; }
+		.orb1 { width:300px; height:300px; background:orange; top:5%; left:5%; animation-duration:25s; }
+		.orb2 { width:250px; height:250px; background:purple; bottom:8%; right:5%; animation-duration:22s; }
+		.orb3 { width:220px; height:220px; background:teal; top:35%; left:50%; animation-duration:28s; }
+		@keyframes float { 0%,100% { transform:translateY(0) translateX(0);} 50% { transform:translateY(-30px) translateX(30px);} }
+		.no-scrollbar { scrollbar-width:none; -ms-overflow-style:none; }
+		.no-scrollbar::-webkit-scrollbar { display:none; }
+		.line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+		.category-item-active { background:linear-gradient(135deg,#f97316,#d946ef) !important; border-color:#f97316 !important; color:#fff; }
+		html.theme-light .category-item-active { box-shadow:0 0 0 1px var(--border-softer),0 4px 12px -4px rgba(15,23,42,0.25); }
+		.filter-btn.active { background:#f97316 !important; color:#fff !important; }
+	</style>
+</head>
+<body class="bg-black text-white min-h-screen overflow-y-auto overflow-x-hidden relative flex justify-center">
+
+	<!-- Orbs Background -->
+	<div class="absolute inset-0 -z-10 pointer-events-none">
+		<div class="orb orb1"></div>
+		<div class="orb orb2"></div>
+		<div class="orb orb3"></div>
+	</div>
+
+	<div class="w-full max-w-sm relative z-10">
+		<!-- Header (shared) -->
+		<header class="sticky top-0 left-0 w-full z-50">
+			<div class="backdrop-blur-md bg-white/10 border-b border-white/20 px-4 py-3 shadow-lg">
+				<nav class="flex items-center justify-between">
+					<div class="flex items-center space-x-2">
+						<button class="text-gray-300 hover:text-white" aria-label="Menu">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+						</button>
+						<span class="text-2xl font-bold text-orange-500">Paired</span>
+					</div>
+					<div class="flex items-center space-x-2">
+						<button id="openSearch" class="flex items-center justify-center w-9 h-9 rounded-full bg-gray-400/10 backdrop-blur-md border border-gray-600 hover:bg-white/10" aria-label="Search">
+							<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-white" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35M18 11a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/></svg>
+						</button>
+						<a href="chat.html" class="flex items-center justify-center w-9 h-9 rounded-full bg-gray-400/10 backdrop-blur-md border border-gray-600 hover:bg-white/10" aria-label="Messages">
+							<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white -rotate-45" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+						</a>
+						<button id="openSell" class="flex items-center justify-center h-9 px-4 rounded-full bg-orange-600 hover:bg-orange-500 text-xs font-semibold tracking-wide shadow border border-orange-400/30" aria-label="Sell item">Sell</button>
+					</div>
+				</nav>
+				<nav class="flex justify-around mt-3 text-white font-medium space-x-9 text-sm">
+					<a href="Homepage.html" class="hover:text-orange-400 transition" title="Home"><i data-lucide="home"></i></a>
+					<a href="friends.html" class="hover:text-orange-400 transition" title="Friends"><i data-lucide="users"></i></a>
+					<a href="market.html" class="text-orange-400" title="Marketplace"><i data-lucide="shopping-bag"></i></a>
+					<a href="Notification.html" class="hover:text-orange-400 transition" title="Notifications"><i data-lucide="bell"></i></a>
+					<a href="profile.html" class="hover:text-orange-400 transition" title="Profile"><i data-lucide="user"></i></a>
+				</nav>
+			</div>
+		</header>
+
+		<!-- Marketplace Content -->
+		<main class="px-4 pt-4 pb-14 space-y-6">
+			<!-- Search + Filters Bar -->
+			<div class="bg-white/5 border border-white/10 backdrop-blur rounded-xl p-3 space-y-3">
+				<div class="flex gap-2">
+					<input type="text" id="market-search" placeholder="Search Marketplace" class="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:border-orange-500" />
+					<button class="px-3 rounded-lg bg-orange-600 hover:bg-orange-500 text-sm font-medium">Search</button>
+				</div>
+				<div class="flex gap-2 overflow-x-auto no-scrollbar text-[11px] -mx-1 px-1" id="filter-bar">
+					<button class="filter-btn active px-3 py-1.5 rounded-full bg-orange-600 font-medium">All</button>
+					<button class="filter-btn px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20">Electronics</button>
+					<button class="filter-btn px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20">Fashion</button>
+						<button class="filter-btn px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20">Books</button>
+					<button class="filter-btn px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20">Furniture</button>
+					<button class="filter-btn px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20">Vehicles</button>
+					<button class="filter-btn px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20">Sports</button>
+					<button class="filter-btn px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20">More</button>
+				</div>
+			</div>
+
+			<!-- Categories Carousel -->
+			<section class="bg-white/5 border border-white/10 backdrop-blur rounded-xl p-3">
+				<h2 class="text-sm font-semibold mb-2">Browse Categories</h2>
+				<div class="overflow-x-auto no-scrollbar -mx-1 px-1" style="-webkit-overflow-scrolling:touch;">
+					<div class="flex space-x-3 w-max">
+						<button class="category-item flex flex-col items-center justify-center w-20 h-20 rounded-lg bg-gradient-to-br from-orange-600/40 to-purple-700/30 border border-white/10 hover:border-orange-500 transition">
+							<i data-lucide="smartphone" class="w-5 h-5 mb-1"></i><span class="text-[11px]">Phones</span>
+						</button>
+						<button class="category-item flex flex-col items-center justify-center w-20 h-20 rounded-lg bg-white/5 border border-white/10 hover:border-orange-500 transition">
+							<i data-lucide="headphones" class="w-5 h-5 mb-1"></i><span class="text-[11px]">Audio</span>
+						</button>
+						<button class="category-item flex flex-col items-center justify-center w-20 h-20 rounded-lg bg-white/5 border border-white/10 hover:border-orange-500 transition">
+							<i data-lucide="shirt" class="w-5 h-5 mb-1"></i><span class="text-[11px]">Clothing</span>
+						</button>
+						<button class="category-item flex flex-col items-center justify-center w-20 h-20 rounded-lg bg-white/5 border border-white/10 hover:border-orange-500 transition">
+							<i data-lucide="couch" class="w-5 h-5 mb-1"></i><span class="text-[11px]">Furniture</span>
+						</button>
+						<button class="category-item flex flex-col items-center justify-center w-20 h-20 rounded-lg bg-white/5 border border-white/10 hover:border-orange-500 transition">
+							<i data-lucide="car" class="w-5 h-5 mb-1"></i><span class="text-[11px]">Cars</span>
+						</button>
+						<button class="category-item flex flex-col items-center justify-center w-20 h-20 rounded-lg bg-white/5 border border-white/10 hover:border-orange-500 transition">
+							<i data-lucide="book-open" class="w-5 h-5 mb-1"></i><span class="text-[11px]">Books</span>
+						</button>
+						<button class="category-item flex flex-col items-center justify-center w-20 h-20 rounded-lg bg-white/5 border border-white/10 hover:border-orange-500 transition">
+							<i data-lucide="football" class="w-5 h-5 mb-1"></i><span class="text-[11px]">Sports</span>
+						</button>
+						<button class="category-item flex flex-col items-center justify-center w-20 h-20 rounded-lg bg-white/5 border border-white/10 hover:border-orange-500 transition">
+							<i data-lucide="laptop" class="w-5 h-5 mb-1"></i><span class="text-[11px]">Laptops</span>
+						</button>
+					</div>
+				</div>
+			</section>
+
+			<!-- New For You / Products Grid -->
+			<section class="space-y-3" id="product-section">
+				<div class="flex items-center justify-between">
+					<h2 class="text-sm font-semibold">Today's Picks</h2>
+					<button id="refresh-products" class="text-[11px] text-orange-400 hover:underline">Refresh</button>
+				</div>
+				<div id="products-grid" class="grid grid-cols-2 gap-3">
+					<!-- Product Cards injected -->
+				</div>
+				<div class="pt-2">
+					<button id="load-more" class="w-full py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 text-sm font-medium">Load more</button>
+				</div>
+			</section>
+		</main>
+	</div>
+
+	<script>
+		lucide.createIcons();
+
+		const sampleProducts = [
+			{id:1, title:'iPhone 13 Pro Max - 256GB Factory Unlocked', price:720, location:'Accra', time:'2h', img:'https://picsum.photos/id/1015/400/400', cat:'Electronics'},
+			{id:2, title:'Minimal Wood Study Desk', price:140, location:'Cape Coast', time:'3h', img:'https://picsum.photos/id/1062/400/400', cat:'Furniture'},
+			{id:3, title:'Used Toyota Corolla 2015 Clean', price:5500, location:'Takoradi', time:'5h', img:'https://picsum.photos/id/1074/400/400', cat:'Vehicles'},
+			{id:4, title:'Wireless Noise Cancelling Headphones', price:85, location:'Kumasi', time:'1d', img:'https://picsum.photos/id/1080/400/400', cat:'Electronics'},
+			{id:5, title:'Assorted Sports Gear Bundle', price:65, location:'Accra', time:'1d', img:'https://picsum.photos/id/1067/400/400', cat:'Sports'},
+			{id:6, title:'Classic Literature Book Set (10pcs)', price:50, location:'Cape Coast', time:'2d', img:'https://picsum.photos/id/1050/400/400', cat:'Books'},
+			{id:7, title:'Slim Fit Casual Shirt - New', price:18, location:'Accra', time:'2d', img:'https://picsum.photos/id/1005/400/400', cat:'Fashion'},
+			{id:8, title:'Gaming Laptop 16GB RAM RTX', price:990, location:'Koforidua', time:'3d', img:'https://picsum.photos/id/1047/400/400', cat:'Electronics'},
+			{id:9, title:'Modern Fabric Couch - 3 Seater', price:320, location:'Tema', time:'3d', img:'https://picsum.photos/id/1084/400/400', cat:'Furniture'},
+			{id:10, title:'Mountain Bike 21-Speed', price:210, location:'Accra', time:'4d', img:'https://picsum.photos/id/1018/400/400', cat:'Sports'},
+			{id:11, title:'MacBook Air M1 8GB/256GB', price:780, location:'Accra', time:'5d', img:'https://picsum.photos/id/180/400/400', cat:'Laptops'},
+			{id:12, title:'Vintage Leather Backpack', price:45, location:'Cape Coast', time:'6d', img:'https://picsum.photos/id/1069/400/400', cat:'Fashion'}
+		];
+
+		let shown = 0; const batch = 6; let activeFilter = 'All';
+		const grid = document.getElementById('products-grid');
+
+		function formatPrice(p){ return 'GH₵' + p.toLocaleString(); }
+
+		function productCard(p){
+			return `<div class="product relative group bg-white/5 border border-white/10 rounded-lg overflow-hidden cursor-pointer" data-cat="${p.cat}" data-id="${p.id}" data-title="${p.title.replace(/&/g,'&amp;')}" data-price="${p.price}" data-location="${p.location}" data-time="${p.time}" data-img="${p.img}" data-desc="${(p.desc||'No description provided').replace(/&/g,'&amp;')}">
+				<button class="absolute top-1 right-1 z-10 favourite w-8 h-8 flex items-center justify-center rounded-full bg-black/50 backdrop-blur text-white/70 hover:text-orange-400">
+					<i data-lucide="heart" class="w-4 h-4"></i>
+				</button>
+				<div class="w-full h-36 bg-center bg-cover" style="background-image:url('${p.img}')"></div>
+				<div class="p-2 space-y-1">
+					<p class="text-[12px] font-semibold leading-tight line-clamp-2">${p.title}</p>
+					<p class="text-orange-400 text-[13px] font-bold">${formatPrice(p.price)}${p.neg?' <span class=\"text-[10px] font-normal bg-orange-600/20 text-orange-200 px-1.5 py-0.5 rounded ml-1\">Negotiable</span>':''}</p>
+					<p class="text-[10px] text-gray-400 flex items-center justify-between"><span>${p.location}</span><span>${p.time}</span></p>
+				</div>
+			</div>`; }
+
+		function render(reset=false){
+			if(reset){ grid.innerHTML=''; shown=0; }
+			const list = sampleProducts.filter(p=> activeFilter==='All' || p.cat===activeFilter);
+			const slice = list.slice(0, shown + batch);
+			grid.innerHTML = slice.map(productCard).join('');
+			shown = slice.length;
+			document.getElementById('load-more').classList.toggle('hidden', shown>=list.length);
+			lucide.createIcons();
+		}
+
+		document.getElementById('load-more').addEventListener('click', ()=> render());
+		document.getElementById('refresh-products').addEventListener('click', ()=> { shown=0; render(true); });
+
+		document.addEventListener('click', e=>{
+			const fav = e.target.closest('.favourite');
+			if(fav){
+				fav.classList.toggle('text-orange-400');
+				fav.classList.toggle('scale-110');
+			}
+			const filterBtn = e.target.closest('.filter-btn');
+			if(filterBtn){
+				document.querySelectorAll('.filter-btn').forEach(b=> b.classList.remove('active','bg-orange-600','font-medium'));
+				document.querySelectorAll('.filter-btn').forEach(b=> b.classList.add('bg-white/10'));
+				filterBtn.classList.add('active','bg-orange-600','font-medium');
+				filterBtn.classList.remove('bg-white/10');
+				activeFilter = filterBtn.textContent.trim();
+				render(true);
+			}
+			const catItem = e.target.closest('.category-item');
+			if(catItem){
+				const label = catItem.textContent.trim();
+				const map = {Phones:'Electronics', Clothing:'Fashion'};
+				activeFilter = map[label] || label;
+				document.querySelectorAll('.category-item').forEach(c=> c.classList.remove('category-item-active'));
+				catItem.classList.add('category-item-active');
+				const btn = Array.from(document.querySelectorAll('.filter-btn')).find(b=> b.textContent.trim()===activeFilter);
+				if(btn){ btn.click(); } else { render(true); }
+			}
+			const productCardEl = e.target.closest('.product');
+			if(productCardEl){ openProductModal(productCardEl); }
+		});
+
+		// Simple search filter (client-side)
+		document.getElementById('market-search').addEventListener('input', e=>{
+			const q = e.target.value.toLowerCase();
+			grid.querySelectorAll('.product').forEach(card=>{
+				const title = card.querySelector('p').textContent.toLowerCase();
+				card.classList.toggle('hidden', !title.includes(q));
+			});
+		});
+
+		render(true);
+	</script>
+	<!-- Sell Modal -->
+	<div id="sellModal" class="fixed inset-0 z-[1000] hidden">
+		<div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+		<div class="absolute inset-x-0 top-0 mx-auto w-full max-w-sm p-4 animate-fade-in">
+			<div class="bg-white/10 border border-white/20 rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+				<div class="flex items-center justify-between px-4 py-3 border-b border-white/10">
+					<h3 class="text-sm font-semibold">List an Item</h3>
+					<button id="closeSell" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10" aria-label="Close sell modal">
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+					</button>
+				</div>
+				<form id="sellForm" class="p-4 space-y-4 overflow-y-auto">
+					<div>
+						<label class="text-xs font-medium block mb-1">Product Images (max 4)</label>
+						<input id="sellImages" type="file" accept="image/*" multiple class="block w-full text-xs" />
+						<div id="sellPreview" class="mt-2 grid grid-cols-2 gap-2 text-[10px] text-gray-400"></div>
+					</div>
+					<div>
+						<label class="text-xs font-medium block mb-1">Title</label>
+						<input required id="sellTitle" type="text" class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/10 text-sm focus:outline-none" placeholder="e.g. iPhone 13 Pro Max" />
+					</div>
+					<div class="flex gap-2">
+						<div class="flex-1">
+							<label class="text-xs font-medium block mb-1">Price (GH₵)</label>
+							<input required id="sellPrice" type="number" min="0" class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/10 text-sm focus:outline-none" />
+						</div>
+						<div class="w-28">
+							<label class="text-xs font-medium block mb-1">Category</label>
+							<select id="sellCategory" class="w-full px-2 py-2 rounded-lg bg-black/30 border border-white/10 text-xs focus:outline-none">
+								<option>Electronics</option>
+								<option>Fashion</option>
+								<option>Furniture</option>
+								<option>Vehicles</option>
+								<option>Sports</option>
+								<option>Books</option>
+								<option>Laptops</option>
+							</select>
+						</div>
+					</div>
+					<div>
+						<label class="text-xs font-medium block mb-1">Description</label>
+						<textarea id="sellDesc" rows="3" class="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/10 text-sm focus:outline-none resize-none" placeholder="Condition, features, etc."></textarea>
+					</div>
+					<div class="flex items-center gap-2">
+						<input id="sellLocation" type="text" class="flex-1 px-3 py-2 rounded-lg bg-black/30 border border-white/10 text-sm focus:outline-none" placeholder="Location" />
+						<label class="flex items-center gap-1 text-[11px] select-none"><input id="sellNegotiable" type="checkbox" class="accent-orange-600"><span>Negotiable</span></label>
+					</div>
+					<button id="sellSubmit" type="submit" class="w-full py-2 rounded-lg bg-orange-600 hover:bg-orange-500 font-medium text-sm disabled:opacity-40 disabled:cursor-not-allowed">Publish</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<script>
+	(function(){
+		const openBtn = document.getElementById('openSell');
+		const modal = document.getElementById('sellModal');
+		const closeBtn = document.getElementById('closeSell');
+		const form = document.getElementById('sellForm');
+		const imgInput = document.getElementById('sellImages');
+		const preview = document.getElementById('sellPreview');
+		function open(){ modal.classList.remove('hidden'); document.body.classList.add('no-scroll'); }
+		function close(){ modal.classList.add('hidden'); document.body.classList.remove('no-scroll'); form.reset(); preview.innerHTML=''; }
+		openBtn.addEventListener('click', open);
+		closeBtn.addEventListener('click', close);
+		modal.addEventListener('click', e=>{ if(e.target===modal) close(); });
+		document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !modal.classList.contains('hidden')) close(); });
+		imgInput.addEventListener('change', ()=>{
+			preview.innerHTML='';
+			Array.from(imgInput.files||[]).slice(0,4).forEach(f=>{
+				const url = URL.createObjectURL(f);
+				const img = document.createElement('img');
+				img.src = url; img.className='w-full h-24 object-cover rounded-lg';
+				preview.appendChild(img);
+			});
+		});
+		form.addEventListener('submit', e=>{
+			e.preventDefault();
+			const title=document.getElementById('sellTitle').value.trim();
+			const price=parseFloat(document.getElementById('sellPrice').value)||0;
+			const cat=document.getElementById('sellCategory').value;
+			const desc=document.getElementById('sellDesc').value.trim();
+			const location=document.getElementById('sellLocation').value.trim()||'Accra';
+			const time='Now';
+			const negotiable=document.getElementById('sellNegotiable').checked;
+			// Prepend new product card
+			const grid = document.getElementById('products-grid');
+			const id = Date.now();
+			const firstImage = preview.querySelector('img')?.src || 'https://picsum.photos/seed/'+id+'/400/400';
+			const card = document.createElement('div');
+			card.className='product relative group bg-white/5 border border-white/10 rounded-lg overflow-hidden cursor-pointer';
+			card.dataset.cat = cat;
+			card.dataset.title = title; card.dataset.price=price; card.dataset.location=location; card.dataset.time=time; card.dataset.img=firstImage; card.dataset.desc=desc; card.dataset.neg=negotiable;
+			card.innerHTML = `<button class=\"absolute top-1 right-1 z-10 favourite w-8 h-8 flex items-center justify-center rounded-full bg-black/50 backdrop-blur text-white/70 hover:text-orange-400\"><i data-lucide='heart' class='w-4 h-4'></i></button><div class='w-full h-36 bg-center bg-cover' style='background-image:url(${firstImage})'></div><div class='p-2 space-y-1'><p class='text-[12px] font-semibold leading-tight line-clamp-2'>${title}</p><p class='text-orange-400 text-[13px] font-bold'>GH₵${price.toLocaleString()}${negotiable?" <span class='text-[10px] font-normal bg-orange-600/20 text-orange-200 px-1.5 py-0.5 rounded ml-1'>Negotiable</span>":''}</p><p class='text-[10px] text-gray-400 flex items-center justify-between'><span>${location}</span><span>${time}</span></p></div>`;
+			grid.prepend(card); lucide.createIcons(); close();
+		});
+	})();
+	</script>
+	<!-- Product Detail Modal -->
+	<div id="productModal" class="fixed inset-0 z-[1100] hidden">
+		<div class="absolute inset-0 bg-black/70 backdrop-blur-md"></div>
+		<div class="absolute inset-x-0 top-0 mx-auto w-full max-w-sm p-4 animate-fade-in">
+			<div class="bg-white/10 border border-white/20 rounded-2xl shadow-xl overflow-hidden flex flex-col">
+				<div class="relative w-full h-64 bg-center bg-cover" id="pmImage"></div>
+				<button id="closeProduct" class="absolute top-2 right-2 w-9 h-9 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 backdrop-blur border border-white/10" aria-label="Close product modal"><i data-lucide="x" class="w-5 h-5"></i></button>
+				<div class="p-4 space-y-3">
+					<h3 id="pmTitle" class="text-sm font-semibold leading-snug"></h3>
+					<p id="pmPrice" class="text-orange-400 font-bold"></p>
+					<p id="pmMeta" class="text-[11px] text-gray-400"></p>
+					<p id="pmDesc" class="text-[12px] text-gray-300 leading-relaxed"></p>
+					<div class="flex gap-2 pt-2">
+						<button id="pmSeller" class="flex-1 py-2 rounded-full bg-gradient-to-r from-orange-600 to-pink-600 hover:opacity-90 text-sm font-medium">Seller</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+	(function(){
+		const modal=document.getElementById('productModal');
+		const closeBtn=document.getElementById('closeProduct');
+		function close(){ modal.classList.add('hidden'); document.body.classList.remove('no-scroll'); }
+		window.openProductModal=function(el){
+			document.getElementById('pmImage').style.backgroundImage=`url('${el.dataset.img}')`;
+			document.getElementById('pmTitle').textContent=el.dataset.title;
+			document.getElementById('pmPrice').textContent='GH₵'+Number(el.dataset.price).toLocaleString();
+			document.getElementById('pmMeta').textContent=el.dataset.location+' • '+el.dataset.time;
+			document.getElementById('pmDesc').textContent=el.dataset.desc||'No description';
+			modal.classList.remove('hidden'); document.body.classList.add('no-scroll'); lucide.createIcons();
+		};
+		closeBtn.addEventListener('click', close);
+		modal.addEventListener('click', e=>{ if(e.target===modal) close(); });
+		document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !modal.classList.contains('hidden')) close(); });
+	})();
+	</script>
+	<!-- Search Modal -->
+	<div id="searchModal" class="fixed inset-0 z-[999] hidden">
+		<div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+		<div class="absolute inset-x-0 top-0 mx-auto w-full max-w-sm p-4 animate-fade-in">
+			<div class="bg-white/10 border border-white/20 rounded-2xl p-4 shadow-xl relative">
+				<div class="flex items-center gap-2">
+					<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+					<input id="searchInputModal" type="text" placeholder="Search..." class="flex-1 bg-transparent outline-none text-sm placeholder-gray-400" />
+					<button id="closeSearch" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10" aria-label="Close search">
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+					</button>
+				</div>
+				<div id="searchResults" class="mt-4 max-h-72 overflow-y-auto space-y-2 text-sm"></div>
+				<div id="searchEmpty" class="mt-6 text-center text-xs text-gray-400">Type to start searching</div>
+			</div>
+		</div>
+	</div>
+	<style>
+		@keyframes fade-in {from{opacity:0; transform:translateY(-8px);} to{opacity:1; transform:translateY(0);} }
+		.animate-fade-in { animation: fade-in .25s ease; }
+		.no-scroll { overflow: hidden !important; }
+	</style>
+	<script>
+	(function(){
+		const openBtn = document.getElementById('openSearch');
+		const modal = document.getElementById('searchModal');
+		const closeBtn = document.getElementById('closeSearch');
+		const input = document.getElementById('searchInputModal');
+		const results = document.getElementById('searchResults');
+		const empty = document.getElementById('searchEmpty');
+		const sample = ['Phone','Headphones','Laptop','Desk','Couch','Sports Gear'];
+		function open(){ modal.classList.remove('hidden'); document.body.classList.add('no-scroll'); setTimeout(()=>input.focus(),50);} 
+		function close(){ modal.classList.add('hidden'); document.body.classList.remove('no-scroll'); input.value=''; results.innerHTML=''; empty.classList.remove('hidden'); }
+		openBtn?.addEventListener('click', open);
+		closeBtn?.addEventListener('click', close);
+		modal.addEventListener('click', e=>{ if(e.target===modal) close(); });
+		document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !modal.classList.contains('hidden')) close(); });
+		input.addEventListener('input', ()=>{
+			const q = input.value.trim().toLowerCase();
+			results.innerHTML='';
+			if(!q){ empty.classList.remove('hidden'); return; }
+			empty.classList.add('hidden');
+			const filtered = sample.filter(s=>s.toLowerCase().includes(q));
+			if(!filtered.length){ results.innerHTML='<div class="text-xs text-gray-400 text-center py-4">No matches</div>'; return; }
+			filtered.forEach(item=>{
+				const div = document.createElement('div');
+				div.className='px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer';
+				div.textContent = item;
+				results.appendChild(div);
+			});
+		});
+	})();
+	</script>
+</body>
+</html>

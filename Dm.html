@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>Paired • Chat with Ama Kusi</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script src="https://unpkg.com/lucide@latest"></script>
+	<link rel="stylesheet" href="styles.css" />
+	<script src="theme.js"></script>
+	<style>
+		/* Orbs animation */
+		.orb { position:absolute; border-radius:50%; filter:blur(80px); opacity:.6; animation:float 20s infinite ease-in-out; }
+		.orb1 { width:300px; height:300px; background:orange; top:5%; left:5%; animation-duration:25s; }
+		.orb2 { width:250px; height:250px; background:purple; bottom:8%; right:5%; animation-duration:22s; }
+		.orb3 { width:220px; height:220px; background:teal; top:35%; left:50%; animation-duration:28s; }
+		@keyframes float { 0%,100% { transform:translateY(0) translateX(0);} 50% { transform:translateY(-30px) translateX(30px);} }
+		.no-scrollbar { scrollbar-width:none; -ms-overflow-style:none; }
+		.no-scrollbar::-webkit-scrollbar { display:none; }
+	</style>
+</head>
+<body class="bg-black text-white min-h-screen overflow-y-auto overflow-x-hidden relative flex justify-center">
+
+	<!-- Orbs Background -->
+	<div class="absolute inset-0 -z-10">
+		<div class="orb orb1"></div>
+		<div class="orb orb2"></div>
+		<div class="orb orb3"></div>
+	</div>
+
+	<!-- Page Wrapper -->
+	<div class="w-full max-w-sm relative z-10">
+		<!-- Header for DM Page -->
+		<header class="sticky top-0 left-0 w-full z-50">
+			<div class="backdrop-blur-md bg-white/10 border-b border-white/20 px-4 py-2 shadow-lg">
+				<div class="flex items-center justify-between">
+					<div class="flex items-center space-x-3">
+						<a href="chat.html" class="text-gray-300 hover:text-white" aria-label="Back">
+							<i data-lucide="chevron-left" class="w-6 h-6"></i>
+						</a>
+						<div class="flex items-center gap-3">
+							<div class="relative flex-shrink-0">
+								<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-orange-500">
+									<img src="https://picsum.photos/id/1012/80/80" class="w-full h-full object-cover" alt="avatar" />
+								</div>
+								<span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 border border-black"></span>
+							</div>
+							<div>
+								<p class="text-sm font-semibold text-white">Ama Kusi</p>
+								<p class="text-[11px] text-green-400">Online</p>
+							</div>
+						</div>
+					</div>
+					<!-- Action Icons -->
+					<div class="flex items-center space-x-3">
+						<a href="#" class="text-gray-300 hover:text-white" aria-label="Call">
+							<i data-lucide="phone" class="w-5 h-5"></i>
+						</a>
+						<a href="#" class="text-gray-300 hover:text-white" aria-label="More Options">
+							<i data-lucide="more-vertical" class="w-5 h-5"></i>
+						</a>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<!-- Chat Messages -->
+		<main class="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
+			<!-- Date Separator -->
+			<div class="text-center text-[11px] text-gray-400">Today</div>
+
+			<!-- Received Message -->
+			<div class="flex items-end gap-2 max-w-xs">
+				<div class="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
+					<img src="https://picsum.photos/id/1012/40/40" class="w-full h-full object-cover" alt="avatar" />
+				</div>
+				<div class="bg-white/10 p-2.5 rounded-lg rounded-bl-none">
+					<p class="text-sm leading-snug">Hey! Are we still on for lunch tomorrow?</p>
+					<p class="text-[10px] text-gray-400 text-right mt-1">10:44 AM</p>
+				</div>
+			</div>
+
+			<!-- Sent Message -->
+			<div class="flex items-end gap-2 max-w-xs ml-auto justify-end">
+				<div class="bg-orange-600 p-2.5 rounded-lg rounded-br-none">
+					<p class="text-sm leading-snug">Yes, absolutely! Looking forward to it.</p>
+					<p class="text-[10px] text-orange-200 text-right mt-1">10:45 AM</p>
+				</div>
+			</div>
+			
+			<!-- Received Message -->
+			<div class="flex items-end gap-2 max-w-xs">
+				<div class="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
+					<img src="https://picsum.photos/id/1012/40/40" class="w-full h-full object-cover" alt="avatar" />
+				</div>
+				<div class="bg-white/10 p-2.5 rounded-lg rounded-bl-none">
+					<p class="text-sm leading-snug">Awesome! See you then. Can't wait!</p>
+					<p class="text-[10px] text-gray-400 text-right mt-1">10:45 AM</p>
+				</div>
+			</div>
+
+		</main>
+
+		<!-- Message Input Footer -->
+		<footer class="flex-shrink-0 p-2">
+			<div class="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-2 flex items-center gap-2">
+				<button class="p-2 text-gray-300 hover:text-white"><i data-lucide="smile" class="w-5 h-5"></i></button>
+				<input type="text" placeholder="Type a message..." class="flex-1 bg-transparent text-sm placeholder-gray-400 focus:outline-none">
+				<button class="p-2 text-gray-300 hover:text-white"><i data-lucide="paperclip" class="w-5 h-5"></i></button>
+				<button class="p-2 rounded-lg bg-orange-600 hover:bg-orange-500 text-white"><i data-lucide="send" class="w-5 h-5"></i></button>
+			</div>
+		</footer>
+	</div>
+
+	<script>
+		lucide.createIcons();
+	</script>
+</body>
+</html>
